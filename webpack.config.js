@@ -20,6 +20,11 @@ module.exports = {
       }
     ]
   },
+  devtool: 'eval-source-map',
+    devServer: {
+        hot: true,
+        open: true
+    },
   plugins: [
     new HtmlWebpackPlugin({
       template: 'client/index.html'
