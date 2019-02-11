@@ -8,7 +8,9 @@ import SongCreate from './components/SongCreate';
 import {Router, Route, hashHistory, IndexRoute} from 'react-router';
 import SongDetails from './components/SongDetails';
 
-const apolloClient = new ApolloClient({});
+const apolloClient = new ApolloClient({
+  dataIdFromObject: o => o.id
+});
 const Root = () => {
   
   return (
