@@ -8,11 +8,25 @@ import query from '../gql/songDetailsQuery';
 class SongDetails extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-
-    }
+    this.onLike = this.onLike.bind(this);
   }
   
+  onLike(id, likes) {
+    this.props.mutate({
+      variables: { id: id },
+      optimisticResponse: {
+        __typename: 'Mutation',
+        likeLyric: {
+          __typename: 'LyricType',
+          id: id,
+          likes: likes + 1
+        }
+      }
+    }).then((resp) => {
+      console.log('Liked', resp)
+    });
+  }
+
   render() {
     const {song, lyrics} = this.props.data;
     // console.log(this.props.data.song.title);
@@ -21,7 +35,13 @@ class SongDetails extends Component {
       <h4>LYRICS</h4>
       <ul className="collection">
         {song && song.lyrics && song.lyrics.map((lyric, i)=> {
-          return <li key={i} className="collection-item">{lyric.content}</li>
+          return (
+            <li key={lyric.id} className="collection-item">
+              {lyric.content}
+              <i className="material-icons right" onClick={()=> this.onLike(lyric.id, lyric.likes)}>thumb_up</i>
+              <span className="right ">{lyric.likes}</span>
+            </li>
+          );
         })}
       </ul>
       <LyricCreate id={this.props.params.id}/>
@@ -30,7 +50,17 @@ class SongDetails extends Component {
   }
 }
 
+const likeMutation = gql`
+mutation likeLyric($id: ID) {
+  likeLyric(id: $id){
+    id
+    likes
+    content
+  }
+}`;
 
-export default graphql(query, {
-  options: (props) => { return { variables: { id: props.params.id } } }
-})(SongDetails);
+export default graphql(likeMutation) (
+  graphql(query, {
+    options: (props) => { return { variables: { id: props.params.id } } }
+  })(SongDetails)
+);

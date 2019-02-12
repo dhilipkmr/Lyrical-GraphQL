@@ -5,7 +5,9 @@ query song ($id: ID!) {
     id
     title
     lyrics {
+      id
       content
+      likes
     }
   }
 }`;
